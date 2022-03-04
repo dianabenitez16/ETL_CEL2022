@@ -1923,7 +1923,7 @@ odooProductosSincronizar();
                             asList(odooDB, odooUID, odooPassword, "product.product",
                                     "write", asList(odooDeleteIDs, 
                                             new HashMap(){{
-                                                put("website_visibility", false);
+                                                put("website_published", false);
                                     }})
                             )
                     );
