@@ -1954,7 +1954,7 @@ odooProductosSincronizar();
                                                     put("name", odooInsertProducto.getNombre());
                                                     put("list_price", odooInsertProducto.getPrecioVenta());
                                                     put("website_id", "1");
-                                                    put("is_published", odooInsertProducto.getPublicado());
+                                                    put("website_published", odooInsertProducto.getPublicado());
                                                     if(odooInsertProducto.getCategorias() != null){
                                                         put("public_categ_ids",odooInsertProducto.getArrayCategorias());
                                                     }
@@ -1995,8 +1995,8 @@ odooProductosSincronizar();
                                                     put("default_code", odooUpdateProducto.getCodigoDISCV());
                                                     put("name", odooUpdateProducto.getNombre());
                                                     put("list_price", odooUpdateProducto.getPrecioVenta());
-                                                    put("active", odooUpdateProducto.getActivo());
-                                                    put("website_id", odooUpdateProducto.getWebsite().getID());
+                                                    put("website_published", odooUpdateProducto.getActivo());
+                                                    put("website_id", "1");
                                                     if(odooUpdateProducto.getCategorias() != null)
                                                         put("public_categ_ids",odooUpdateProducto.getArrayCategorias());
                                                    
