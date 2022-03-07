@@ -502,9 +502,9 @@
                                           <Component id="bOdooTestLogin" alignment="0" max="-2" attributes="0"/>
                                           <Component id="bOdooTestModeloCampos" alignment="0" max="-2" attributes="0"/>
                                       </Group>
-                                      <Component id="bOdooTestModeloListar2" alignment="1" max="-2" attributes="0"/>
+                                      <Component id="tActualizar" alignment="1" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="jButton2" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="btDespublicar" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -559,7 +559,7 @@
                                   <Component id="bOdooTestModeloListar1" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="tOdooTestModeloInsertNombre" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel26" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="btDespublicar" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Component id="jSeparator3" min="-2" pref="10" max="-2" attributes="0"/>
@@ -567,7 +567,7 @@
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="tOdooTestModeloUpdateReferenciaExterna" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel27" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="bOdooTestModeloListar2" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="tActualizar" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="tOdooTestModeloUpdateNombre" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel28" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="bOdooTestModeloListar3" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -766,7 +766,7 @@
                         </Property>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JButton" name="bOdooTestModeloListar2">
+                    <Component class="javax.swing.JButton" name="tActualizar">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Actualizar contenido"/>
                         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
@@ -774,7 +774,7 @@
                         </Property>
                       </Properties>
                       <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bOdooTestModeloListar2ActionPerformed"/>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tActualizarActionPerformed"/>
                       </Events>
                     </Component>
                     <Component class="javax.swing.JButton" name="bOdooTestModeloListar3">
@@ -828,15 +828,15 @@
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bOdooTest5ActionPerformed"/>
                       </Events>
                     </Component>
-                    <Component class="javax.swing.JButton" name="jButton2">
+                    <Component class="javax.swing.JButton" name="btDespublicar">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Despublicar productos"/>
+                        <Property name="text" type="java.lang.String" value="Actualizar"/>
                         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                           <Dimension value="[130, 25]"/>
                         </Property>
                       </Properties>
                       <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btDespublicarActionPerformed"/>
                       </Events>
                     </Component>
                   </SubComponents>

@@ -205,10 +205,10 @@ public class aProductos extends javax.swing.JInternalFrame implements PropertyCh
             deposito = Integer.valueOf(tDesde.getText().trim());
         }
         if(!tDesde.getText().isEmpty() && !tHasta.getText().isEmpty()){
-        query =   "select itm_cod as Codigo, itm_des as Descripcion, itm_au3 as Precio_Venta from productos where itm_au3 >= "+tDesde.getText()+ "and itm_au3 <= "+tHasta.getText()+"";
+        query =   "select itm_cod as Codigo, itm_des as Descripcion, itm_au3 as Venta, itm_act as StockTotal, ppd_act as StockSucursal from productos inner join existencias_por_deposito on itm_cod = ppd_itm where itm_au3 >= "+tDesde.getText()+ "and itm_au3 <= "+tHasta.getText()+" and ppd_act >= 1";
                // new String [] { "Codigo", "Descripcion", "Venta", "Costo", "Stock Total", "Stock Suc." }
         }else{
-            query = "select itm_cod as Codigo, itm_des as Descripcion, itm_au3 as Precio_Venta from productos";
+            query = "select itm_cod as Codigo, itm_des as Descripcion, itm_au3 as Venta, itm_act as StockTotal, ppd_act as StockSucursal from productos inner join existencias_por_deposito on itm_cod = ppd_itm";
         }
         SWDVY.consultar(query);
         SWDVY.consultar.addPropertyChangeListener(this);
@@ -228,28 +228,14 @@ public class aProductos extends javax.swing.JInternalFrame implements PropertyCh
         Object[][] datosProcesados;
         Object[][] discvTablaContenido;
         
-      List<String> descripcion =      Arrays.asList(ldescripcion.getText().split(" "));
+   
 
         for (Object[] registro : SWDVY.consultar.datatypes) {
-           
-                if(registro[0].toString().trim().length() >= 3){
-                     if(descripcion.size() > 0 && productoExistente){
-                         System.out.println("got in");
-                    for (String nombre : descripcion) {
-                        if(registro[1].toString().contains("LAMPARA ")){
-                            System.out.println("LAMPARA " + registro[1]);
-                           }else{
-                            productoExistente = false;
-                        }
-                    }
-                }
-                    datosEnProceso[registrosProcesados] = registro;
-                //    System.out.println("REGISTRO " + registro[0].toString());
-                //    System.out.println("boolean" + registro[0].toString());
-                    registrosProcesados++;
-                }
-            }
-        datosProcesados = new Object[registrosProcesados][cantidadColumnas];
+           datosEnProceso[registrosProcesados] = registro;
+           registrosProcesados++;
+        }
+                   
+       datosProcesados = new Object[registrosProcesados][cantidadColumnas];
         discvProductos = new Producto[registrosProcesados];
         for (int i = 0; i < datosProcesados.length; i++) {
             datosProcesados[i] = datosEnProceso[i];
@@ -264,32 +250,34 @@ public class aProductos extends javax.swing.JInternalFrame implements PropertyCh
                 }else{
                     discvProductos[productosCreados].setPublicado(false);
                 } 
+                discvProductos[productosCreados].setStockTotal((Double) registro[3]);
           for (Categoria odooCategoria : odooCategorias) {
-                    if(registro[1].toString().substring(0, 3).contains(odooCategoria.getReferenciaExterna())){
+                    if(registro[1].toString().substring(0, 4).contains(odooCategoria.getReferenciaExterna())){
                         discvProductos[productosCreados].setCategorias(new Categoria[]{odooCategoria});
-            
+                        System.out.println("CAT " + registro[1].toString().substring(0, 4));
                     }
-                }  
+                } 
           productosCreados++;
           }
           
         //ARMADO DE TABLE MODEL
-        discvTablaContenido = new Object[productosCreados][5];
+        discvTablaContenido = new Object[productosCreados][6];
         Integer linea = 0;
    //      System.out.println("RESGISYTO " + registrosProcesados.toString());
         for (Producto discvProducto : discvProductos) {
             discvTablaContenido[linea][0] = discvProducto.getCodigoDISCV(); 
     //        discvTablaContenido[linea][0] = discvProducto.getReferenciaInterna();
             discvTablaContenido[linea][1] = discvProducto.getNombre();
-            System.out.println("NOMBRE DE P SIN C " + discvProducto.getNombre());
             discvTablaContenido[linea][2] = discvProducto.getPrecioVenta();
             discvTablaContenido[linea][3] = "CELEBRA";  
-            if(discvProducto.getCategorias()[0].getNombre() == null) {
-                System.out.println("ESTA VACÍO " + discvProducto.getNombre());
+           
+            if(discvProducto.getCategorias() == null) {
+                discvTablaContenido[linea][4] = "Uncategorized";
+                
             }else{
             discvTablaContenido[linea][4] = discvProducto.getCategorias()[0].getNombre();
             }
-            
+            discvTablaContenido[linea][5] = discvProducto.getStockTotal();
             linea++;
             
         }
@@ -297,7 +285,7 @@ public class aProductos extends javax.swing.JInternalFrame implements PropertyCh
         DefaultTableModel modelo = new DefaultTableModel(
                 discvTablaContenido, 
         new String [] {
-                "Codigo", "Descripcion", "Precio Venta", "Website", "Categoria"
+                "Codigo", "Descripcion", "Precio Venta", "Website", "Categoria", "Stock"
             });
         TableRowSorter<TableModel> sorter = new TableRowSorter<>((TableModel) modelo);
         sorter.toggleSortOrder(1);
@@ -494,14 +482,14 @@ public class aProductos extends javax.swing.JInternalFrame implements PropertyCh
         tOdooTestModeloUpdateReferenciaExterna = new javax.swing.JTextField();
         jLabel28 = new javax.swing.JLabel();
         tOdooTestModeloUpdateNombre = new javax.swing.JTextField();
-        bOdooTestModeloListar2 = new javax.swing.JButton();
+        tActualizar = new javax.swing.JButton();
         bOdooTestModeloListar3 = new javax.swing.JButton();
         jSeparator3 = new javax.swing.JSeparator();
         jLabel24 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         taDebug = new javax.swing.JTextArea();
         bOdooTest5 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btDespublicar = new javax.swing.JButton();
         jPanel7 = new javax.swing.JPanel();
         jButton3 = new javax.swing.JButton();
         tOdooTest2IDProducto = new javax.swing.JTextField();
@@ -841,11 +829,11 @@ public class aProductos extends javax.swing.JInternalFrame implements PropertyCh
 
         tOdooTestModeloUpdateNombre.setPreferredSize(new java.awt.Dimension(80, 25));
 
-        bOdooTestModeloListar2.setText("Actualizar contenido");
-        bOdooTestModeloListar2.setPreferredSize(new java.awt.Dimension(130, 25));
-        bOdooTestModeloListar2.addActionListener(new java.awt.event.ActionListener() {
+        tActualizar.setText("Actualizar contenido");
+        tActualizar.setPreferredSize(new java.awt.Dimension(130, 25));
+        tActualizar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bOdooTestModeloListar2ActionPerformed(evt);
+                tActualizarActionPerformed(evt);
             }
         });
 
@@ -874,11 +862,11 @@ public class aProductos extends javax.swing.JInternalFrame implements PropertyCh
             }
         });
 
-        jButton2.setText("Despublicar productos");
-        jButton2.setPreferredSize(new java.awt.Dimension(130, 25));
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btDespublicar.setText("Actualizar");
+        btDespublicar.setPreferredSize(new java.awt.Dimension(130, 25));
+        btDespublicar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btDespublicarActionPerformed(evt);
             }
         });
 
@@ -938,8 +926,8 @@ public class aProductos extends javax.swing.JInternalFrame implements PropertyCh
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(bOdooTestLogin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(bOdooTestModeloCampos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(bOdooTestModeloListar2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(tActualizar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btDespublicar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
@@ -986,14 +974,14 @@ public class aProductos extends javax.swing.JInternalFrame implements PropertyCh
                     .addComponent(bOdooTestModeloListar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tOdooTestModeloInsertNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btDespublicar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tOdooTestModeloUpdateReferenciaExterna, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(bOdooTestModeloListar2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tOdooTestModeloUpdateNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(bOdooTestModeloListar3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -1457,7 +1445,7 @@ odooProductosSincronizar();
         odooTestInsertar();
     }//GEN-LAST:event_bOdooTestModeloListar4ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void btDespublicarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btDespublicarActionPerformed
         for (Producto odooUpdateProducto : odooProductos) {
             try {
                 //odooUpdateProducto.imprimir();
@@ -1477,7 +1465,7 @@ odooProductosSincronizar();
             }
         }
         System.out.println("Se actualizaron " + odooProductos.length + " productos.");
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_btDespublicarActionPerformed
 
     private void bOdooTest5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bOdooTest5ActionPerformed
         taDebug.setText("");
@@ -1488,9 +1476,9 @@ odooProductosSincronizar();
         odooModeloObtener();
     }//GEN-LAST:event_bOdooTestModeloListar3ActionPerformed
 
-    private void bOdooTestModeloListar2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bOdooTestModeloListar2ActionPerformed
+    private void tActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tActualizarActionPerformed
         odooModeloActualizar();
-    }//GEN-LAST:event_bOdooTestModeloListar2ActionPerformed
+    }//GEN-LAST:event_tActualizarActionPerformed
 
     private void bOdooTestModeloListar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bOdooTestModeloListar1ActionPerformed
         odooModeloInsertar();
@@ -1850,9 +1838,10 @@ odooProductosSincronizar();
                             
                             productoNuevo = false;
                                 // Se analiza si se deja como esta, o si hay que despublicar o no por falta de stock.
-                                if(discvProducto.getPrecioVenta() >= Double.valueOf(tDesde.getText()) && discvProducto.getPrecioVenta()<= Double.valueOf(tDesde.getText()) && odooProducto.getActivo()){
+                                if(discvProducto.getPrecioVenta() >= Double.valueOf(tDesde.getText()) && discvProducto.getPrecioVenta()<= Double.valueOf(tDesde.getText()) && 
+                                        odooProducto.getActivo() && discvProducto.getStockTotal() > 0){
                                     odooNoneProductos.add(odooProducto);
-                                }else if(discvProducto.getPrecioVenta() >= Double.valueOf(tHasta.getText()) && discvProducto.getPrecioVenta()<= Double.valueOf(tDesde.getText()) && !odooProducto.getActivo()){
+                                }else if(discvProducto.getPrecioVenta() >= Double.valueOf(tHasta.getText()) && discvProducto.getPrecioVenta()<= Double.valueOf(tDesde.getText()) && !odooProducto.getActivo() || discvProducto.getStockTotal() < 0){
                                     odooProducto.setPublicado(true);
                                     odooProducto.setCategorias(discvProducto.getCategorias());
                                     activo = true;
@@ -2067,7 +2056,7 @@ odooProductosSincronizar();
                     taDebug.append("Obteniendo registro. \n");
                     odooRegistros = asList((Object[]) odooCliente.execute(odooConfigObject, "execute_kw", 
                             asList(odooDB, odooUID, odooPassword, tOdooTestModelo.getText().trim(), 
-                            "search_read", asList(asList(asList("x_referencia_externa", "=", tOdooTestModeloUpdateReferenciaExterna.getText().trim()))),new HashMap() {{put("fields", asList("name", "x_referencia_externa"));}}        
+                            "search_read", asList(asList(asList("x_ReferenciaExterna", "=", tOdooTestModeloUpdateReferenciaExterna.getText().trim()))),new HashMap() {{put("fields", asList("name", "x_ReferenciaExterna"));}}        
                             )
                     ));
                     
@@ -2503,7 +2492,6 @@ odooProductosSincronizar();
     private javax.swing.JButton bOdooTestModeloCampos;
     private javax.swing.JButton bOdooTestModeloListar;
     private javax.swing.JButton bOdooTestModeloListar1;
-    private javax.swing.JButton bOdooTestModeloListar2;
     private javax.swing.JButton bOdooTestModeloListar3;
     private javax.swing.JButton bOdooTestModeloListar4;
     private javax.swing.JButton bOdooTestModeloListar5;
@@ -2511,10 +2499,10 @@ odooProductosSincronizar();
     private javax.swing.JButton bOdooTestServidor;
     private javax.swing.JButton bSeleccionarMaestroCategorias;
     private javax.swing.JButton bSeleccionarMaestroProductos;
+    private javax.swing.JButton btDespublicar;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JLabel eMensaje;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -2568,6 +2556,7 @@ odooProductosSincronizar();
     private javax.swing.JLabel precioDesde;
     private javax.swing.JLabel precioHasta;
     private javax.swing.JScrollPane spProductos;
+    private javax.swing.JButton tActualizar;
     private javax.swing.JTextField tDesde;
     private javax.swing.JTextField tHasta;
     private javax.swing.JTextField tMaestroCategoriasEcommerce;
